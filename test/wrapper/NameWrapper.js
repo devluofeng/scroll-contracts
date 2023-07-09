@@ -98,7 +98,7 @@ describe('Name Wrapper', () => {
 
     BaseRegistrar = await deploy('BaseRegistrarImplementation', [
       EnsRegistry.address,
-      namehash('eth'),
+      namehash('scroll'),
     ])
 
     BaseRegistrar2 = BaseRegistrar.connect(signers[1])
@@ -117,10 +117,10 @@ describe('Name Wrapper', () => {
     ])
     NameWrapper2 = NameWrapper.connect(signers[1])
 
-    // setup .eth
+    // setup .scroll
     await EnsRegistry.setSubnodeOwner(
       ROOT_NODE,
-      utils.keccak256(utils.toUtf8Bytes('eth')),
+      utils.keccak256(utils.toUtf8Bytes('scroll')),
       BaseRegistrar.address
     )
 
@@ -131,8 +131,8 @@ describe('Name Wrapper', () => {
       account
     )
 
-    //make sure base registrar is owner of eth TLD
-    expect(await EnsRegistry.owner(namehash('eth'))).to.equal(
+    //make sure base registrar is owner of scroll TLD
+    expect(await EnsRegistry.owner(namehash('scroll'))).to.equal(
       BaseRegistrar.address
     )
   })
@@ -147,9 +147,9 @@ describe('Name Wrapper', () => {
   shouldBehaveLikeERC1155(
     () => [NameWrapper, signers],
     [
-      namehash('test1.eth'),
-      namehash('test2.eth'),
-      namehash('doesnotexist.eth'),
+      namehash('test1.scroll'),
+      namehash('test2.scroll'),
+      namehash('doesnotexist.scroll'),
     ],
     async (firstAddress, secondAddress) => {
       await BaseRegistrar.setApprovalForAll(NameWrapper.address, true)
@@ -283,15 +283,15 @@ describe('Name Wrapper', () => {
       )
     })
 
-    it('Does not allow wrapping .eth 2LDs.', async () => {
+    it('Does not allow wrapping .scroll 2LDs.', async () => {
       const label = 'wrapped'
       const labelHash = labelhash(label)
       await BaseRegistrar.register(labelHash, account, 84600)
       await EnsRegistry.setApprovalForAll(NameWrapper.address, true)
       await expect(
-        NameWrapper.wrap(encodeName('wrapped.eth'), account2, 0, EMPTY_ADDRESS)
+        NameWrapper.wrap(encodeName('wrapped.scroll'), account2, 0, EMPTY_ADDRESS)
       ).to.be.revertedWith(
-        'NameWrapper: .eth domains need to use wrapETH2LD()'
+        'NameWrapper: .scroll domains need to use wrapETH2LD()'
       )
     })
 
@@ -602,7 +602,7 @@ describe('Name Wrapper', () => {
         .reverted
     })
 
-    it('Will not unwrap .eth 2LDs.', async () => {
+    it('Will not unwrap .scroll 2LDs.', async () => {
       const label = 'unwrapped'
       const labelHash = labelhash(label)
 
@@ -613,13 +613,13 @@ describe('Name Wrapper', () => {
 
       await NameWrapper.wrapETH2LD(label, account, 0, EMPTY_ADDRESS)
       const ownerOfWrappedETH = await NameWrapper.ownerOf(
-        namehash('unwrapped.eth')
+        namehash('unwrapped.scroll')
       )
       expect(ownerOfWrappedETH).to.equal(account)
       await expect(
-        NameWrapper.unwrap(namehash('eth'), labelhash('unwrapped'), account)
+        NameWrapper.unwrap(namehash('scroll'), labelhash('unwrapped'), account)
       ).to.be.revertedWith(
-        'NameWrapper: .eth names must be unwrapped with unwrapETH2LD()'
+        'NameWrapper: .scroll names must be unwrapped with unwrapETH2LD()'
       )
     })
 
@@ -660,7 +660,7 @@ describe('Name Wrapper', () => {
   describe('wrapETH2LD()', () => {
     const label = 'wrapped2'
     const labelHash = labelhash(label)
-    const nameHash = namehash(label + '.eth')
+    const nameHash = namehash(label + '.scroll')
     it('wraps a name if sender is owner', async () => {
       await BaseRegistrar.register(labelHash, account, 84600)
 
@@ -691,7 +691,7 @@ describe('Name Wrapper', () => {
       )
     })
 
-    it('Cannot wrap a name if the owner has not authorised the wrapper with the .eth registrar.', async () => {
+    it('Cannot wrap a name if the owner has not authorised the wrapper with the .scroll registrar.', async () => {
       await BaseRegistrar.register(labelHash, account, 84600)
       await expect(
         NameWrapper.wrapETH2LD(label, account, CAN_DO_EVERYTHING, EMPTY_ADDRESS)
@@ -739,15 +739,15 @@ describe('Name Wrapper', () => {
 
       await expect(tx)
         .to.emit(NameWrapper, 'NameUnwrapped')
-        .withArgs(namehash('wrapped2.eth'), EMPTY_ADDRESS)
+        .withArgs(namehash('wrapped2.scroll'), EMPTY_ADDRESS)
       await expect(tx)
         .to.emit(NameWrapper, 'TransferSingle')
         .withArgs(account2, account, EMPTY_ADDRESS, nameHash, 1)
       await expect(tx)
         .to.emit(NameWrapper, 'NameWrapped')
         .withArgs(
-          namehash('wrapped2.eth'),
-          encodeName('wrapped2.eth'),
+          namehash('wrapped2.scroll'),
+          encodeName('wrapped2.scroll'),
           account2,
           CAN_DO_EVERYTHING
         )
@@ -789,15 +789,15 @@ describe('Name Wrapper', () => {
 
       await expect(tx)
         .to.emit(NameWrapper, 'NameUnwrapped')
-        .withArgs(namehash('wrapped2.eth'), EMPTY_ADDRESS)
+        .withArgs(namehash('wrapped2.scroll'), EMPTY_ADDRESS)
       await expect(tx)
         .to.emit(NameWrapper, 'TransferSingle')
         .withArgs(account2, account, EMPTY_ADDRESS, nameHash, 1)
       await expect(tx)
         .to.emit(NameWrapper, 'NameWrapped')
         .withArgs(
-          namehash('wrapped2.eth'),
-          encodeName('wrapped2.eth'),
+          namehash('wrapped2.scroll'),
+          encodeName('wrapped2.scroll'),
           account2,
           CAN_DO_EVERYTHING
         )
@@ -827,20 +827,20 @@ describe('Name Wrapper', () => {
         EMPTY_ADDRESS
       )
       let [fuses, vulnerability, nodeVulnerable] = await NameWrapper.getFuses(
-        namehash('wrapped2.eth')
+        namehash('wrapped2.scroll')
       )
       expect(fuses).to.equal(CANNOT_UNWRAP | CANNOT_REPLACE_SUBDOMAIN)
       expect(vulnerability).to.equal(ParentVulnerability.Safe)
 
       // Create a subdomain that can't be unwrapped
       await NameWrapper.setSubnodeOwnerAndWrap(
-        namehash('wrapped2.eth'),
+        namehash('wrapped2.scroll'),
         'sub',
         account,
         CANNOT_UNWRAP
       )
       ;[fuses, vulnerability, nodeVulnerable] = await NameWrapper.getFuses(
-        namehash('sub.wrapped2.eth')
+        namehash('sub.wrapped2.scroll')
       )
       expect(fuses).to.equal(CANNOT_UNWRAP)
       expect(vulnerability).to.equal(ParentVulnerability.Safe)
@@ -860,17 +860,17 @@ describe('Name Wrapper', () => {
         EMPTY_ADDRESS
       )
       ;[fuses, vulnerability] = await NameWrapper.getFuses(
-        namehash('wrapped2.eth')
+        namehash('wrapped2.scroll')
       )
       expect(fuses).to.equal(CAN_DO_EVERYTHING)
       expect(vulnerability).to.equal(ParentVulnerability.Safe)
       expect(nodeVulnerable).to.equal(EMPTY_BYTES32)
       ;[fuses, vulnerability, nodeVulnerable] = await NameWrapper.getFuses(
-        namehash('sub.wrapped2.eth')
+        namehash('sub.wrapped2.scroll')
       )
       expect(fuses).to.equal(CANNOT_UNWRAP)
       expect(vulnerability).to.equal(ParentVulnerability.Fuses)
-      expect(nodeVulnerable).to.equal(namehash('wrapped2.eth'))
+      expect(nodeVulnerable).to.equal(namehash('wrapped2.scroll'))
     })
 
     it('emits Wrap event', async () => {
@@ -885,8 +885,8 @@ describe('Name Wrapper', () => {
       await expect(tx)
         .to.emit(NameWrapper, 'NameWrapped')
         .withArgs(
-          namehash('wrapped2.eth'),
-          encodeName('wrapped2.eth'),
+          namehash('wrapped2.scroll'),
+          encodeName('wrapped2.scroll'),
           account,
           CAN_DO_EVERYTHING
         )
@@ -947,7 +947,7 @@ describe('Name Wrapper', () => {
       )
     })
 
-    it('Allows an account approved by the owner on the .eth registrar to wrap a name.', async () => {
+    it('Allows an account approved by the owner on the .scroll registrar to wrap a name.', async () => {
       await BaseRegistrar.register(labelHash, account, 84600)
       await BaseRegistrar.setApprovalForAll(NameWrapper.address, true)
       await BaseRegistrar.setApprovalForAll(account2, true)
@@ -966,7 +966,7 @@ describe('Name Wrapper', () => {
       await expect(
         NameWrapper2.wrapETH2LD(label, account, 0, EMPTY_ADDRESS)
       ).to.be.revertedWith(
-        'NameWrapper: Sender is not owner or authorised by the owner or authorised on the .eth registrar'
+        'NameWrapper: Sender is not owner or authorised by the owner or authorised on the .scroll registrar'
       )
     })
 
@@ -1026,7 +1026,7 @@ describe('Name Wrapper', () => {
   describe('unwrapETH2LD()', () => {
     const label = 'unwrapped'
     const labelHash = labelhash(label)
-    const nameHash = namehash(label + '.eth')
+    const nameHash = namehash(label + '.scroll')
     it('Allows the owner to unwrap a name.', async () => {
       await BaseRegistrar.register(labelHash, account, 84600)
 
@@ -1039,15 +1039,15 @@ describe('Name Wrapper', () => {
         CAN_DO_EVERYTHING,
         EMPTY_ADDRESS
       )
-      expect(await NameWrapper.ownerOf(namehash('unwrapped.eth'))).to.equal(
+      expect(await NameWrapper.ownerOf(namehash('unwrapped.scroll'))).to.equal(
         account
       )
       await NameWrapper.unwrapETH2LD(labelHash, account, account)
-      // transfers the controller on the .eth registrar to the target address.
-      expect(await EnsRegistry.owner(namehash('unwrapped.eth'))).to.equal(
+      // transfers the controller on the .scroll registrar to the target address.
+      expect(await EnsRegistry.owner(namehash('unwrapped.scroll'))).to.equal(
         account
       )
-      //Transfers the registrant on the .eth registrar to the target address
+      //Transfers the registrant on the .scroll registrar to the target address
       expect(await BaseRegistrar.ownerOf(labelHash)).to.equal(account)
     })
 
@@ -1063,7 +1063,7 @@ describe('Name Wrapper', () => {
       const tx = await NameWrapper.unwrapETH2LD(labelHash, account, account)
       await expect(tx)
         .to.emit(NameWrapper, 'NameUnwrapped')
-        .withArgs(namehash('unwrapped.eth'), account)
+        .withArgs(namehash('unwrapped.scroll'), account)
     })
 
     it('emits TransferSingle event', async () => {
@@ -1128,7 +1128,7 @@ describe('Name Wrapper', () => {
     it('Returns the owner', async () => {
       const label = 'subdomain'
       const tokenId = labelhash(label)
-      const wrappedTokenId = namehash(label + '.eth')
+      const wrappedTokenId = namehash(label + '.scroll')
       const CAN_DO_EVERYTHING = 0
 
       await BaseRegistrar.register(tokenId, account, 84600)
@@ -1152,7 +1152,7 @@ describe('Name Wrapper', () => {
   describe('burnFuses()', () => {
     const label = 'fuses'
     const tokenId = labelhash('fuses')
-    const wrappedTokenId = namehash('fuses.eth')
+    const wrappedTokenId = namehash('fuses.scroll')
     it('Burns fuses but shows them as disabled if the parent domain does not have CANNOT_REPLACE_SUBDOMAIN burned.', async () => {
       await EnsRegistry.setSubnodeOwner(ROOT_NODE, labelhash('abc'), account)
 
@@ -1315,7 +1315,7 @@ describe('Name Wrapper', () => {
     it('can set fuses and then burn ability to burn fuses', async () => {
       const label = 'burnabilitytoburn'
       const tokenId = labelhash(label)
-      const wrappedTokenId = namehash(label + '.eth')
+      const wrappedTokenId = namehash(label + '.scroll')
       const CAN_DO_EVERYTHING = 0
 
       await BaseRegistrar.register(tokenId, account, 84600)
@@ -1347,7 +1347,7 @@ describe('Name Wrapper', () => {
       const account2 = await signer2.getAddress()
       const label = 'fuses3'
       const tokenId = labelhash('fuses3')
-      const wrappedTokenId = namehash('fuses3.eth')
+      const wrappedTokenId = namehash('fuses3.scroll')
 
       await BaseRegistrar.register(tokenId, account, 84600)
 
@@ -1376,7 +1376,7 @@ describe('Name Wrapper', () => {
     it('can set fuses and burn canSetResolver and canSetTTL', async () => {
       const label = 'fuses1'
       const tokenId = labelhash(label)
-      const wrappedTokenId = namehash(label + '.eth')
+      const wrappedTokenId = namehash(label + '.scroll')
       const CAN_DO_EVERYTHING = 0
 
       await BaseRegistrar.register(tokenId, account, 84600)
@@ -1413,7 +1413,7 @@ describe('Name Wrapper', () => {
     it('can set fuses and burn canCreateSubdomains', async () => {
       const label = 'fuses2'
       const tokenId = labelhash(label)
-      const wrappedTokenId = namehash(label + '.eth')
+      const wrappedTokenId = namehash(label + '.scroll')
 
       await BaseRegistrar.register(tokenId, account, 84600)
 
@@ -1439,11 +1439,11 @@ describe('Name Wrapper', () => {
       )
 
       expect(
-        await EnsRegistry.owner(namehash('creatable.fuses2.eth'))
+        await EnsRegistry.owner(namehash('creatable.fuses2.scroll'))
       ).to.equal(NameWrapper.address)
 
       expect(
-        await NameWrapper.ownerOf(namehash('creatable.fuses2.eth'))
+        await NameWrapper.ownerOf(namehash('creatable.fuses2.scroll'))
       ).to.equal(account)
 
       await NameWrapper.burnFuses(
@@ -1466,7 +1466,7 @@ describe('Name Wrapper', () => {
 
       await expect(
         NameWrapper.setSubnodeOwner(
-          namehash('fuses2.eth'),
+          namehash('fuses2.scroll'),
           labelhash('uncreateable'),
           account
         )
@@ -1479,7 +1479,7 @@ describe('Name Wrapper', () => {
   describe('setSubnodeOwnerAndWrap()', async () => {
     const label = 'ownerandwrap'
     const tokenId = labelhash(label)
-    const wrappedTokenId = namehash(label + '.eth')
+    const wrappedTokenId = namehash(label + '.scroll')
 
     before(async () => {
       await registerSetupAndWrapName(
@@ -1499,11 +1499,11 @@ describe('Name Wrapper', () => {
         CAN_DO_EVERYTHING
       )
 
-      expect(await EnsRegistry.owner(namehash(`sub.${label}.eth`))).to.equal(
+      expect(await EnsRegistry.owner(namehash(`sub.${label}.scroll`))).to.equal(
         NameWrapper.address
       )
 
-      expect(await NameWrapper.ownerOf(namehash(`sub.${label}.eth`))).to.equal(
+      expect(await NameWrapper.ownerOf(namehash(`sub.${label}.scroll`))).to.equal(
         account
       )
     })
@@ -1517,11 +1517,11 @@ describe('Name Wrapper', () => {
         0
       )
 
-      expect(await EnsRegistry.owner(namehash(`sub.${label}.eth`))).to.equal(
+      expect(await EnsRegistry.owner(namehash(`sub.${label}.scroll`))).to.equal(
         NameWrapper.address
       )
 
-      expect(await NameWrapper.ownerOf(namehash(`sub.${label}.eth`))).to.equal(
+      expect(await NameWrapper.ownerOf(namehash(`sub.${label}.scroll`))).to.equal(
         account
       )
     })
@@ -1534,11 +1534,11 @@ describe('Name Wrapper', () => {
         CAN_DO_EVERYTHING
       )
 
-      expect(await EnsRegistry.owner(namehash(`sub.${label}.eth`))).to.equal(
+      expect(await EnsRegistry.owner(namehash(`sub.${label}.scroll`))).to.equal(
         NameWrapper.address
       )
 
-      expect(await NameWrapper.ownerOf(namehash(`sub.${label}.eth`))).to.equal(
+      expect(await NameWrapper.ownerOf(namehash(`sub.${label}.scroll`))).to.equal(
         account2
       )
     })
@@ -1582,7 +1582,7 @@ describe('Name Wrapper', () => {
     it('Fuses are not enabled if the parent name does not have CANNOT_REPLACE_SUBDOMAIN burned', async () => {
       const label = 'subdomain2'
       const tokenId = labelhash(label)
-      const wrappedTokenId = namehash(label + '.eth')
+      const wrappedTokenId = namehash(label + '.scroll')
       await registerSetupAndWrapName(label, account, CAN_DO_EVERYTHING)
       await NameWrapper.setSubnodeOwnerAndWrap(
         wrappedTokenId,
@@ -1591,7 +1591,7 @@ describe('Name Wrapper', () => {
         CANNOT_UNWRAP
       )
       const [fuses, vulnerability, vulnerableNode] = await NameWrapper.getFuses(
-        namehash(`sub.${label}.eth`)
+        namehash(`sub.${label}.scroll`)
       )
       expect(fuses).to.equal(CANNOT_UNWRAP)
       expect(vulnerability).to.equal(ParentVulnerability.Fuses)
@@ -1600,7 +1600,7 @@ describe('Name Wrapper', () => {
     it('Does not allow fuses to be burned if CANNOT_UNWRAP is not burned.', async () => {
       const label = 'subdomain2'
       const tokenId = labelhash(label)
-      const wrappedTokenId = namehash(label + '.eth')
+      const wrappedTokenId = namehash(label + '.scroll')
       await registerSetupAndWrapName(
         label,
         account,
@@ -1621,7 +1621,7 @@ describe('Name Wrapper', () => {
     it('Allows fuses to be burned if CANNOT_UNWRAP is burned and parent CANNOT_REPLACE_SUBDOMAIN is burned', async () => {
       const label = 'subdomain2'
       const tokenId = labelhash(label)
-      const wrappedTokenId = namehash(label + '.eth')
+      const wrappedTokenId = namehash(label + '.scroll')
       await registerSetupAndWrapName(
         label,
         account,
@@ -1636,7 +1636,7 @@ describe('Name Wrapper', () => {
 
       expect(
         await NameWrapper.allFusesBurned(
-          namehash(`sub.${label}.eth`),
+          namehash(`sub.${label}.scroll`),
           CANNOT_REPLACE_SUBDOMAIN
         )
       ).to.equal(true)
@@ -1652,8 +1652,8 @@ describe('Name Wrapper', () => {
       await expect(tx)
         .to.emit(NameWrapper, 'NameWrapped')
         .withArgs(
-          namehash(`sub.${label}.eth`),
-          encodeName(`sub.${label}.eth`),
+          namehash(`sub.${label}.scroll`),
+          encodeName(`sub.${label}.scroll`),
           account2,
           0
         )
@@ -1673,7 +1673,7 @@ describe('Name Wrapper', () => {
           account,
           EMPTY_ADDRESS,
           account2,
-          namehash(`sub.${label}.eth`),
+          namehash(`sub.${label}.scroll`),
           1
         )
     })
@@ -1694,7 +1694,7 @@ describe('Name Wrapper', () => {
   describe('setSubnodeRecordAndWrap()', async () => {
     const label = 'subdomain2'
     const tokenId = labelhash(label)
-    const wrappedTokenId = namehash(label + '.eth')
+    const wrappedTokenId = namehash(label + '.scroll')
     let resolver
 
     before(async () => {
@@ -1717,11 +1717,11 @@ describe('Name Wrapper', () => {
         0
       )
 
-      expect(await EnsRegistry.owner(namehash(`sub.${label}.eth`))).to.equal(
+      expect(await EnsRegistry.owner(namehash(`sub.${label}.scroll`))).to.equal(
         NameWrapper.address
       )
 
-      expect(await NameWrapper.ownerOf(namehash(`sub.${label}.eth`))).to.equal(
+      expect(await NameWrapper.ownerOf(namehash(`sub.${label}.scroll`))).to.equal(
         account
       )
     })
@@ -1738,11 +1738,11 @@ describe('Name Wrapper', () => {
         0
       )
 
-      expect(await EnsRegistry.owner(namehash(`sub.${label}.eth`))).to.equal(
+      expect(await EnsRegistry.owner(namehash(`sub.${label}.scroll`))).to.equal(
         NameWrapper.address
       )
 
-      expect(await NameWrapper.ownerOf(namehash(`sub.${label}.eth`))).to.equal(
+      expect(await NameWrapper.ownerOf(namehash(`sub.${label}.scroll`))).to.equal(
         account
       )
     })
@@ -1757,7 +1757,7 @@ describe('Name Wrapper', () => {
         0
       )
 
-      expect(await NameWrapper.ownerOf(namehash(`sub.${label}.eth`))).to.equal(
+      expect(await NameWrapper.ownerOf(namehash(`sub.${label}.scroll`))).to.equal(
         account2
       )
     })
@@ -1810,7 +1810,7 @@ describe('Name Wrapper', () => {
     it('Fuses are not enabled if the parent name does not have CANNOT_REPLACE_SUBDOMAIN burned.', async () => {
       const label = 'subdomain3'
       const tokenId = labelhash(label)
-      const wrappedTokenId = namehash(label + '.eth')
+      const wrappedTokenId = namehash(label + '.scroll')
       await registerSetupAndWrapName(label, account, CAN_DO_EVERYTHING)
       await NameWrapper.setSubnodeRecordAndWrap(
         wrappedTokenId,
@@ -1821,7 +1821,7 @@ describe('Name Wrapper', () => {
         CANNOT_UNWRAP
       )
       const [fuses, vulnerable, vulnerableNode] = await NameWrapper.getFuses(
-        namehash(`sub.${label}.eth`)
+        namehash(`sub.${label}.scroll`)
       )
       expect(fuses).to.equal(CANNOT_UNWRAP)
       expect(vulnerable).to.equal(ParentVulnerability.Fuses)
@@ -1831,7 +1831,7 @@ describe('Name Wrapper', () => {
     it('Does not allow fuses to be burned if CANNOT_UNWRAP is not burned', async () => {
       const label = 'subdomain3'
       const tokenId = labelhash(label)
-      const wrappedTokenId = namehash(label + '.eth')
+      const wrappedTokenId = namehash(label + '.scroll')
       await registerSetupAndWrapName(
         label,
         account,
@@ -1863,8 +1863,8 @@ describe('Name Wrapper', () => {
       await expect(tx)
         .to.emit(NameWrapper, 'NameWrapped')
         .withArgs(
-          namehash(`sub.${label}.eth`),
-          encodeName(`sub.${label}.eth`),
+          namehash(`sub.${label}.scroll`),
+          encodeName(`sub.${label}.scroll`),
           account2,
           0
         )
@@ -1885,7 +1885,7 @@ describe('Name Wrapper', () => {
           account,
           EMPTY_ADDRESS,
           account2,
-          namehash(`sub.${label}.eth`),
+          namehash(`sub.${label}.scroll`),
           1
         )
     })
@@ -1900,7 +1900,7 @@ describe('Name Wrapper', () => {
         0
       )
 
-      const node = namehash(`sub.${label}.eth`)
+      const node = namehash(`sub.${label}.scroll`)
 
       expect(await EnsRegistry.owner(node)).to.equal(NameWrapper.address)
       expect(await EnsRegistry.resolver(node)).to.equal(resolver)
@@ -1925,7 +1925,7 @@ describe('Name Wrapper', () => {
   describe('setRecord', () => {
     const label = 'setrecord'
     const labelHash = labelhash(label)
-    const wrappedTokenId = namehash(label + '.eth')
+    const wrappedTokenId = namehash(label + '.scroll')
 
     before(async () => {
       await registerSetupAndWrapName(label, account, CANNOT_UNWRAP)
@@ -1985,10 +1985,10 @@ describe('Name Wrapper', () => {
   describe('setSubnodeRecord', () => {
     const label = 'setsubnoderecord'
     const labelHash = labelhash(label)
-    const wrappedTokenId = namehash(label + '.eth')
+    const wrappedTokenId = namehash(label + '.scroll')
     const subLabel = 'sub'
     const subLabelHash = labelhash(subLabel)
-    const subWrappedTokenId = namehash(`${subLabel}.${label}.eth`)
+    const subWrappedTokenId = namehash(`${subLabel}.${label}.scroll`)
 
     before(async () => {
       await registerSetupAndWrapName(label, account, CANNOT_UNWRAP)
@@ -2094,10 +2094,10 @@ describe('Name Wrapper', () => {
   describe('setSubnodeOwner', () => {
     const label = 'setsubnodeowner'
     const labelHash = labelhash(label)
-    const wrappedTokenId = namehash(label + '.eth')
+    const wrappedTokenId = namehash(label + '.scroll')
     const subLabel = 'sub'
     const subLabelHash = labelhash(subLabel)
-    const subWrappedTokenId = namehash(`${subLabel}.${label}.eth`)
+    const subWrappedTokenId = namehash(`${subLabel}.${label}.scroll`)
 
     before(async () => {
       await registerSetupAndWrapName(label, account, CANNOT_UNWRAP)
@@ -2153,7 +2153,7 @@ describe('Name Wrapper', () => {
   describe('setResolver', () => {
     const label = 'setresolver'
     const labelHash = labelhash(label)
-    const wrappedTokenId = namehash(label + '.eth')
+    const wrappedTokenId = namehash(label + '.scroll')
 
     before(async () => {
       await registerSetupAndWrapName(label, account, CANNOT_UNWRAP)
@@ -2196,7 +2196,7 @@ describe('Name Wrapper', () => {
   describe('setTTL', () => {
     const label = 'setttl'
     const labelHash = labelhash(label)
-    const wrappedTokenId = namehash(label + '.eth')
+    const wrappedTokenId = namehash(label + '.scroll')
 
     before(async () => {
       await registerSetupAndWrapName(label, account, CANNOT_UNWRAP)
@@ -2238,9 +2238,9 @@ describe('Name Wrapper', () => {
 
   describe('onERC721Received', () => {
     const label = 'send2contract'
-    const name = label + '.eth'
+    const name = label + '.scroll'
     const tokenId = labelhash(label)
-    const wrappedTokenId = namehash(label + '.eth')
+    const wrappedTokenId = namehash(label + '.scroll')
     it('Wraps a name transferred to it and sets the owner to the provided address', async () => {
       await BaseRegistrar.register(tokenId, account, 84600)
 
@@ -2272,7 +2272,7 @@ describe('Name Wrapper', () => {
           )
         )
       ).to.be.revertedWith(
-        'NameWrapper: Wrapper only supports .eth ERC721 token transfers'
+        'NameWrapper: Wrapper only supports .scroll ERC721 token transfers'
       )
     })
 
@@ -2501,7 +2501,7 @@ describe('Name Wrapper', () => {
   describe('Transfer', () => {
     const label = 'transfer'
     const labelHash = labelhash(label)
-    const wrappedTokenId = namehash(label + '.eth')
+    const wrappedTokenId = namehash(label + '.scroll')
 
     before(async () => {
       await registerSetupAndWrapName(label, account, CANNOT_UNWRAP)
@@ -2537,13 +2537,13 @@ describe('Name Wrapper', () => {
   describe('getFuses', () => {
     const label = 'getfuses'
     const labelHash = labelhash(label)
-    const nameHash = namehash(label + '.eth')
+    const nameHash = namehash(label + '.scroll')
     const subLabel = 'sub'
     const subLabelHash = labelhash(subLabel)
-    const subNameHash = namehash(`${subLabel}.${label}.eth`)
+    const subNameHash = namehash(`${subLabel}.${label}.scroll`)
     const subSubLabel = 'subsub'
     const subSubLabelhash = labelhash(subSubLabel)
-    const subSubNameHash = namehash(`${subSubLabel}.${subLabel}.${label}.eth`)
+    const subSubNameHash = namehash(`${subSubLabel}.${subLabel}.${label}.scroll`)
     it('returns the correct fuses and vulnerability', async () => {
       const initialFuses = CANNOT_UNWRAP | CANNOT_SET_RESOLVER
       await BaseRegistrar.setApprovalForAll(NameWrapper.address, true)
@@ -2683,7 +2683,7 @@ describe('Name Wrapper', () => {
   describe('registerAndWrapETH2LD', () => {
     const label = 'register'
     const labelHash = labelhash(label)
-    const wrappedTokenId = namehash(label + '.eth')
+    const wrappedTokenId = namehash(label + '.scroll')
 
     before(async () => {
       await BaseRegistrar.addController(NameWrapper.address)
@@ -2745,7 +2745,7 @@ describe('Name Wrapper', () => {
         .to.emit(NameWrapper, 'NameWrapped')
         .withArgs(
           wrappedTokenId,
-          encodeName('register.eth'),
+          encodeName('register.scroll'),
           account,
           CAN_DO_EVERYTHING
         )
@@ -2847,7 +2847,7 @@ describe('Name Wrapper', () => {
   describe('renew', () => {
     const label = 'register'
     const labelHash = labelhash(label)
-    const wrappedTokenId = namehash(label + '.eth')
+    const wrappedTokenId = namehash(label + '.scroll')
 
     before(async () => {
       await BaseRegistrar.addController(NameWrapper.address)

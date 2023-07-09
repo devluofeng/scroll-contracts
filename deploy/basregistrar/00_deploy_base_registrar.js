@@ -14,7 +14,7 @@ module.exports = async ({getNamedAccounts, deployments, network}) => {
 
     await deploy('BaseRegistrarImplementation', {
         from: deployer, 
-        args: [ens.address, namehash.hash('arb')],
+        args: [ens.address, namehash.hash('scroll')],
         log: true
     })
 
@@ -22,7 +22,7 @@ module.exports = async ({getNamedAccounts, deployments, network}) => {
 
     const transactions = []
     transactions.push(await base.addController(owner, {from: deployer}))
-    transactions.push(await ens.setSubnodeOwner(ZERO_HASH, sha3('arb'), base.address))
+    transactions.push(await ens.setSubnodeOwner(ZERO_HASH, sha3('scroll'), base.address))
 
     console.log(`Waiting on ${transactions.length} transactions setting base registrar`);
     await Promise.all(transactions.map((tx) => tx.wait()));

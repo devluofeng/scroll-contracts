@@ -20,11 +20,11 @@ module.exports = async ({getNamedAccounts, deployments, network}) => {
     const baseRegistrar = await ethers.getContract('BaseRegistrarImplementation');
 
     const transactions = []
-    transactions.push(await ens.setSubnodeOwner(ZERO_HASH, sha3('arb'), owner))
-    transactions.push(await ens.setResolver(namehash.hash('arb'), resolver.address))
-    transactions.push(await resolver['setAddr(bytes32,address)'](namehash.hash('arb'), resolver.address))
-    transactions.push(await resolver.setInterface(namehash.hash('arb'), "0x018fac06", ethregistrar.address))
-    transactions.push(await ens.setSubnodeOwner(ZERO_HASH,sha3('arb'),baseRegistrar.address));
+    transactions.push(await ens.setSubnodeOwner(ZERO_HASH, sha3('scroll'), owner))
+    transactions.push(await ens.setResolver(namehash.hash('scroll'), resolver.address))
+    transactions.push(await resolver['setAddr(bytes32,address)'](namehash.hash('scroll'), resolver.address))
+    transactions.push(await resolver.setInterface(namehash.hash('scroll'), "0x018fac06", ethregistrar.address))
+    transactions.push(await ens.setSubnodeOwner(ZERO_HASH,sha3('scroll'),baseRegistrar.address));
     console.log(`Waiting on settings to take place on resolvers ${transactions.length}`)
     await Promise.all(transactions.map((tx) => tx.wait()));    
 }

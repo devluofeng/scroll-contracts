@@ -20,11 +20,11 @@ module.exports = async ({getNamedAccounts, deployments, network}) => {
     const ens = await ethers.getContract('ENSRegistry')
     const transactions = []
 
-    transactions.push(await ens.setSubnodeOwner(ZERO_HASH,sha3('arb'),controller.address));
+    transactions.push(await ens.setSubnodeOwner(ZERO_HASH,sha3('scroll'),controller.address));
     transactions.push(await baseRegistrar.addController(controller.address, {from: deployer}));
     // ESTIMATE GAS -->
     transactions.push(await controller.setPriceOracle(priceOracle.address, {from: deployer}));
-    transactions.push(await ens.setSubnodeOwner(ZERO_HASH,sha3('arb'),baseRegistrar.address));
+    transactions.push(await ens.setSubnodeOwner(ZERO_HASH,sha3('scroll'),baseRegistrar.address));
     console.log(`Waiting on settings to take place ${transactions.length}`)
     await Promise.all(transactions.map((tx) => tx.wait()));
     

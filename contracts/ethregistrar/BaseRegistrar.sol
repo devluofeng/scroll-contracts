@@ -16,7 +16,7 @@ abstract contract BaseRegistrar is Ownable, IERC721 {
     // The ENS registry
     ENS public ens;
 
-    // The namehash of the TLD this registrar owns (eg, .eth)
+    // The namehash of the TLD this registrar owns (eg, .scroll)
     bytes32 public baseNode;
 
     // A map of addresses that are authorised to register and renew names.

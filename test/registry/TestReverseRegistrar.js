@@ -320,7 +320,7 @@ describe('ReverseRegistrar Tests', () => {
         await registrar.setNameForAddr(
           dummyOwnable.address,
           accounts[0],
-          'dummyownable.eth',
+          'dummyownable.scroll',
           {
             from: accounts[0],
           }
@@ -328,7 +328,7 @@ describe('ReverseRegistrar Tests', () => {
         assert.equal(await ens.owner(dummyOwnableReverseNode), accounts[0])
         assert.equal(
           await resolver.name(dummyOwnableReverseNode),
-          'dummyownable.eth'
+          'dummyownable.scroll'
         )
       })
     })

@@ -2,7 +2,7 @@ const { ethers } = require("hardhat");
 
 const tld_map = {
     'mainnet': ['xyz'],
-    'ropsten': ['xyz'],
+    'goerli': ['xyz'],
     'localhost': ['xyz'],
 }
 

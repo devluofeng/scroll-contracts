@@ -25,7 +25,7 @@ contract NameWrapper is
     mapping(bytes32 => bytes) public override names;
 
     bytes32 private constant ETH_NODE =
-        0xd924c6d6935f3bf84be3da0b40fabe48800690c760c2db576028a389f1b54f89;
+        0xd051e4f8cb1870f877b00266e1292322bea4c492a9933488e94d7c1a935e8dfa;
     bytes32 private constant ROOT_NODE =
         0x0000000000000000000000000000000000000000000000000000000000000000;
 
@@ -51,7 +51,7 @@ contract NameWrapper is
             uint96(CANNOT_REPLACE_SUBDOMAIN | CANNOT_UNWRAP)
         );
         names[ROOT_NODE] = "\x00";
-        names[ETH_NODE] = "\x03eth\x00";
+        names[ETH_NODE] = "\x03scroll\x00";
     }
 
     function supportsInterface(bytes4 interfaceId)
@@ -147,9 +147,9 @@ contract NameWrapper is
     }
 
     /**
-     * @notice Wraps a .eth domain, creating a new token and sending the original ERC721 token to this *         contract
-     * @dev Can be called by the owner of the name in the .eth registrar or an authorised caller on the *      registrar
-     * @param label label as a string of the .eth domain to wrap
+     * @notice Wraps a .scroll domain, creating a new token and sending the original ERC721 token to this *         contract
+     * @dev Can be called by the owner of the name in the .scroll registrar or an authorised caller on the *      registrar
+     * @param label label as a string of the .scroll domain to wrap
      * @param _fuses initial fuses to set
      * @param wrappedOwner Owner of the name in this contract
      */
@@ -167,7 +167,7 @@ contract NameWrapper is
             registrant == msg.sender ||
                 isApprovedForAll(registrant, msg.sender) ||
                 registrar.isApprovedForAll(registrant, msg.sender),
-            "NameWrapper: Sender is not owner or authorised by the owner or authorised on the .eth registrar"
+            "NameWrapper: Sender is not owner or authorised by the owner or authorised on the .scroll registrar"
         );
 
         // transfer the token from the user to this contract
@@ -180,9 +180,9 @@ contract NameWrapper is
     }
 
     /**
-     * @dev Registers a new .eth second-level domain and wraps it.
+     * @dev Registers a new .scroll second-level domain and wraps it.
      *      Only callable by authorised controllers.
-     * @param label The label to register (Eg, 'foo' for 'foo.eth').
+     * @param label The label to register (Eg, 'foo' for 'foo.scroll').
      * @param wrappedOwner The owner of the wrapped name.
      * @param duration The duration, in seconds, to register the name for.
      * @param resolver The resolver address to set on the ENS registry (optional).
@@ -202,9 +202,9 @@ contract NameWrapper is
     }
 
     /**
-     * @dev Renews a .eth second-level domain.
+     * @dev Renews a .scroll second-level domain.
      *      Only callable by authorised controllers.
-     * @param tokenId The hash of the label to register (eg, `keccak256('foo')`, for 'foo.eth').
+     * @param tokenId The hash of the label to register (eg, `keccak256('foo')`, for 'foo.scroll').
      * @param duration The number of seconds to renew the name for.
      * @return expires The expiry date of the name, in seconds since the Unix epoch.
      */
@@ -218,7 +218,7 @@ contract NameWrapper is
     }
 
     /**
-     * @notice Wraps a non .eth domain, of any kind. Could be a DNSSEC name vitalik.xyz or a subdomain
+     * @notice Wraps a non .scroll domain, of any kind. Could be a DNSSEC name vitalik.xyz or a subdomain
      * @dev Can be called by the owner in the registry or an authorised caller in the registry
      * @param name The name to wrap, in DNS format
      * @param _fuses initial fuses to set represented as a number. Check getFuses() for more info
@@ -237,7 +237,7 @@ contract NameWrapper is
 
         require(
             parentNode != ETH_NODE,
-            "NameWrapper: .eth domains need to use wrapETH2LD()"
+            "NameWrapper: .scroll domains need to use wrapETH2LD()"
         );
 
         address owner = ens.owner(node);
@@ -258,10 +258,10 @@ contract NameWrapper is
     }
 
     /**
-     * @notice Unwraps a .eth domain. e.g. vitalik.eth
+     * @notice Unwraps a .scroll domain. e.g. vitalik.scroll
      * @dev Can be called by the owner in the wrapper or an authorised caller in the wrapper
-     * @param label label as a string of the .eth domain to wrap e.g. vitalik.xyz would be 'vitalik'
-     * @param newRegistrant sets the owner in the .eth registrar to this address
+     * @param label label as a string of the .scroll domain to wrap e.g. vitalik.xyz would be 'vitalik'
+     * @param newRegistrant sets the owner in the .scroll registrar to this address
      * @param newController sets the owner in the registry to this address
      */
 
@@ -275,10 +275,10 @@ contract NameWrapper is
     }
 
     /**
-     * @notice Unwraps a non .eth domain, of any kind. Could be a DNSSEC name vitalik.xyz or a subdomain
+     * @notice Unwraps a non .scroll domain, of any kind. Could be a DNSSEC name vitalik.xyz or a subdomain
      * @dev Can be called by the owner in the wrapper or an authorised caller in the wrapper
      * @param parentNode parent namehash of the name to wrap e.g. vitalik.xyz would be namehash('xyz')
-     * @param label label as a string of the .eth domain to wrap e.g. vitalik.xyz would be 'vitalik'
+     * @param label label as a string of the .scroll domain to wrap e.g. vitalik.xyz would be 'vitalik'
      * @param newController sets the owner in the registry to this address
      */
 
@@ -289,7 +289,7 @@ contract NameWrapper is
     ) public override onlyTokenOwner(_makeNode(parentNode, label)) {
         require(
             parentNode != ETH_NODE,
-            "NameWrapper: .eth names must be unwrapped with unwrapETH2LD()"
+            "NameWrapper: .scroll names must be unwrapped with unwrapETH2LD()"
         );
         _unwrap(_makeNode(parentNode, label), newController);
     }
@@ -526,10 +526,10 @@ contract NameWrapper is
         uint256 tokenId,
         bytes calldata data
     ) public override returns (bytes4) {
-        //check if it's the eth registrar ERC721
+        //check if it's the scroll registrar ERC721
         require(
             msg.sender == address(registrar),
-            "NameWrapper: Wrapper only supports .eth ERC721 token transfers"
+            "NameWrapper: Wrapper only supports .scroll ERC721 token transfers"
         );
 
         (
@@ -610,7 +610,7 @@ contract NameWrapper is
     ) private returns (bytes32 labelhash) {
         labelhash = keccak256(bytes(label));
         bytes32 node = _makeNode(ETH_NODE, labelhash);
-        bytes memory name = _addLabel(label, "\x03eth\x00");
+        bytes memory name = _addLabel(label, "\x03scroll\x00");
 
         if (resolver != address(0)) {
             ens.setResolver(node, resolver);
@@ -720,7 +720,7 @@ contract NameWrapper is
         bytes32 parentNode
     ) internal view returns (NameSafety vulnerability, bytes32 vulnerableNode) {
         if (parentNode == ETH_NODE) {
-            // Special case .eth: Check registrant or name isexpired
+            // Special case .scroll: Check registrant or name isexpired
 
             try registrar.ownerOf(uint256(labelhash)) returns (
                 address registrarOwner

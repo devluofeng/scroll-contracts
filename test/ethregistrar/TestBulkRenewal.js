@@ -12,8 +12,8 @@ const sha3 = require('web3-utils').sha3;
 const toBN = require('web3-utils').toBN;	
 const { exceptions } = require("../test-utils");
 
-const ETH_LABEL = sha3('eth');
-const ETH_NAMEHASH = namehash.hash('eth');
+const ETH_LABEL = sha3('scroll');
+const ETH_NAMEHASH = namehash.hash('scroll');
 
 contract('BulkRenewal', function (accounts) {
 	let ens;
@@ -36,7 +36,7 @@ contract('BulkRenewal', function (accounts) {
 		resolver = await PublicResolver.new(ens.address, nameWrapper.address);
 
 		// Create a base registrar
-		baseRegistrar = await BaseRegistrar.new(ens.address, namehash.hash('eth'), {from: ownerAccount});
+		baseRegistrar = await BaseRegistrar.new(ens.address, namehash.hash('scroll'), {from: ownerAccount});
 
 		// Set up a dummy price oracle and a controller
 		const dummyOracle = await DummyOracle.new(toBN(100000000));
@@ -52,8 +52,8 @@ contract('BulkRenewal', function (accounts) {
 		// Create the bulk registration contract
 		bulkRenewal = await BulkRenewal.new(ens.address);
 
-		// Configure a resolver for .eth and register the controller interface
-		// then transfer the .eth node to the base registrar.
+		// Configure a resolver for .scroll and register the controller interface
+		// then transfer the .scroll node to the base registrar.
 		await ens.setSubnodeRecord('0x0', ETH_LABEL, ownerAccount, resolver.address, 0);
 		await resolver.setInterface(ETH_NAMEHASH, '0x018fac06', controller.address);
 		await ens.setOwner(ETH_NAMEHASH, baseRegistrar.address);

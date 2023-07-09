@@ -54,8 +54,8 @@ describe('BytesUtils', () => {
       expect(await BytesUtils.namehash(encodeName('.'), 0)).to.equal(namehash(''))
     })
 
-    it('Hashes .eth correctly', async () => {
-      expect(await BytesUtils.namehash(encodeName('eth'), 0)).to.equal(namehash('eth'))
+    it('Hashes .scroll correctly', async () => {
+      expect(await BytesUtils.namehash(encodeName('scroll'), 0)).to.equal(namehash('scroll'))
     })
 
     it('Hashes a 2LD correctly', async () => {

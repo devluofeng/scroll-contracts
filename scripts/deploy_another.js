@@ -32,20 +32,20 @@ module.exports = async function(deployer, network, accounts) {
   // Deploy a new public resolver
   await deployer.deploy(PublicResolver, ENSRegistryWithFallback.address, {from: accounts[1]});
 
-  // Deploy the OwnedResolver for .eth
+  // Deploy the OwnedResolver for .scroll
   await deployer.deploy(OwnedResolver);
   const ownedResolver = await OwnedResolver.deployed();
 
-  // Deploy and activate the .eth registrar
+  // Deploy and activate the .scroll registrar
   await deployer.deploy(BaseRegistrarImplementation, ENSRegistryWithFallback.address, config.ETH_NODE, {from: accounts[1]});
   const registrar = await BaseRegistrarImplementation.deployed();
   await ens.setSubnodeRecord(config.ZERO_ADDRESS, config.ETH_LABEL, BaseRegistrarImplementation.address, ownedResolver.address, 0, {from: accounts[1]});
 
-  // Register 'migrated.eth' and configure a resolved address so people can check easily if their wallet is migrated
+  // Register 'migrated.scroll' and configure a resolved address so people can check easily if their wallet is migrated
   await registrar.addController(accounts[1], {from: accounts[1]});
   await registrar.register(sha3('migrated'), accounts[0], 31536000, {from: accounts[1]});
-  await ens.setResolver(namehash.hash('migrated.eth'), ownedResolver.address, {from: accounts[0]});
-  await ownedResolver.methods['setAddr(bytes32,address)'](namehash.hash('migrated.eth'), config.TARGET_ADDRESS || accounts[0]);
+  await ens.setResolver(namehash.hash('migrated.scroll'), ownedResolver.address, {from: accounts[0]});
+  await ownedResolver.methods['setAddr(bytes32,address)'](namehash.hash('migrated.scroll'), config.TARGET_ADDRESS || accounts[0]);
   await registrar.removeController(accounts[1], {from: accounts[1]});
 
   // Deploy a new subdomain registrar
@@ -111,7 +111,7 @@ module.exports = async function(deployer, network, accounts) {
       await root.transferOwnership(ownerAddress, {from: accounts[1]});
   }
 
-  // Transfer ownership of the .eth registrar, and .eth registrat controller to the required account
+  // Transfer ownership of the .scroll registrar, and .scroll registrat controller to the required account
   await registrar.transferOwnership(ownerAddress, {from: accounts[1]});
   await registrarController.transferOwnership(ownerAddress, {from: accounts[1]});
 };

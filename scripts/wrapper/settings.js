@@ -1,6 +1,6 @@
 const hre = require("hardhat");
 const namehash = require('eth-ens-namehash');
-const tld = "arb";
+const tld = "scroll";
 const ethers = hre.ethers;
 const utils = ethers.utils;
 const labelhash = (label) => utils.keccak256(utils.toUtf8Bytes(label))
@@ -18,7 +18,7 @@ await setupResolver(accounts)
 
 async function setupResolver(accounts){
     const ens = await ethers.getContract('ENSRegistry');
-    await ens.setSubnodeOwner(ZERO_HASH, sha3('arb'), accounts[0]);
+    await ens.setSubnodeOwner(ZERO_HASH, sha3('scroll'), accounts[0]);
 }
 
 

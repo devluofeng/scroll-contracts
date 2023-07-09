@@ -41,15 +41,15 @@ contract('ENSRegistryWithFallback', function (accounts) {
 
     describe('fallback', async () => {
 
-        let hash = namehash.hash('eth');
+        let hash = namehash.hash('scroll');
 
         beforeEach(async () => {
-            await old.setSubnodeOwner('0x0', sha3('eth'), accounts[0], {from: accounts[0]});
+            await old.setSubnodeOwner('0x0', sha3('scroll'), accounts[0], {from: accounts[0]});
         });
 
         it('should use fallback ttl if owner not set', async () => {
-            let hash = namehash.hash('eth')
-            await old.setSubnodeOwner('0x0', sha3('eth'), accounts[0], {from: accounts[0]});
+            let hash = namehash.hash('scroll')
+            await old.setSubnodeOwner('0x0', sha3('scroll'), accounts[0], {from: accounts[0]});
             await old.setTTL(hash, 3600, {from: accounts[0]});
             assert.equal((await ens.ttl(hash)).toNumber(), 3600);
         });

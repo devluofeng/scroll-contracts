@@ -6,7 +6,7 @@ import "./ETHRegistrarController.sol";
 import "../resolvers/Resolver.sol";
 
 contract BulkRenewal {
-    bytes32 constant private ETH_NAMEHASH = 0xd924c6d6935f3bf84be3da0b40fabe48800690c760c2db576028a389f1b54f89;
+    bytes32 constant private ETH_NAMEHASH = 0xd051e4f8cb1870f877b00266e1292322bea4c492a9933488e94d7c1a935e8dfa;
     bytes4 constant private REGISTRAR_CONTROLLER_ID = 0x018fac06;
     bytes4 constant private INTERFACE_META_ID = bytes4(keccak256("supportsInterface(bytes4)"));
     bytes4 constant public BULK_RENEWAL_ID = bytes4(

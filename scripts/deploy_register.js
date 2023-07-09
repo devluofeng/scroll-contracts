@@ -1,6 +1,6 @@
 const hre = require("hardhat");
 const namehash = require('eth-ens-namehash');
-const tld = "arb";
+const tld = "scroll";
 const ethers = hre.ethers;
 const utils = ethers.utils;
 const sha3 = require('web3-utils').sha3;
@@ -22,17 +22,17 @@ async function main() {
 
   const transactions = []
   transactions.push(await base.addController(accounts[0], {from: accounts[0]}))
-  transactions.push(await ens.setSubnodeOwner(ZERO_HASH, sha3('arb'), base.address, {from: accounts[0]}))
-  transactions.push(await ens.setSubnodeOwner(ZERO_HASH, sha3('arb'), accounts[0], {from: accounts[0]}))
-  transactions.push(await ens.setResolver(namehash.hash('arb'), resolver.address, {from: accounts[0]}))
-  transactions.push(await resolver['setAddr(bytes32,address)'](namehash.hash('arb'), resolver.address))
+  transactions.push(await ens.setSubnodeOwner(ZERO_HASH, sha3('scroll'), base.address, {from: accounts[0]}))
+  transactions.push(await ens.setSubnodeOwner(ZERO_HASH, sha3('scroll'), accounts[0], {from: accounts[0]}))
+  transactions.push(await ens.setResolver(namehash.hash('scroll'), resolver.address, {from: accounts[0]}))
+  transactions.push(await resolver['setAddr(bytes32,address)'](namehash.hash('scroll'), resolver.address))
   console.log(`Waiting on ${transactions.length} transactions setting base registrar`);
   await Promise.all(transactions.map((tx) => tx.wait()));
 };
 
 async function setupResolver(ens, resolver, accounts) {
-  const resolverNode = namehash.hash("arb");
-  const resolverLabel = labelhash("arb");
+  const resolverNode = namehash.hash("scroll");
+  const resolverLabel = labelhash("scroll");
   await ens.setSubnodeOwner(ZERO_HASH, resolverLabel, accounts[0]);
   await ens.setResolver(resolverNode, resolver.address);
   await resolver['setAddr(bytes32,address)'](resolverNode, resolver.address);

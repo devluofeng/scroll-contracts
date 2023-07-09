@@ -30,8 +30,8 @@ contract('ETHRegistrarController', function (accounts) {
         nameWrapper = await NameWrapper.new();
         resolver = await PublicResolver.new(ens.address, nameWrapper.address);
 
-        baseRegistrar = await BaseRegistrar.new(ens.address, namehash.hash('eth'), {from: ownerAccount});
-        await ens.setSubnodeOwner('0x0', sha3('eth'), baseRegistrar.address);
+        baseRegistrar = await BaseRegistrar.new(ens.address, namehash.hash('scroll'), {from: ownerAccount});
+        await ens.setSubnodeOwner('0x0', sha3('scroll'), baseRegistrar.address);
 
         const dummyOracle = await DummyOracle.new(toBN(100000000));
         priceOracle = await StablePriceOracle.new(dummyOracle.address, [1]);
@@ -112,7 +112,7 @@ contract('ETHRegistrarController', function (accounts) {
         assert.equal(tx.logs[0].args.owner, registrantAccount);
         assert.equal((await web3.eth.getBalance(controller.address)) - balanceBefore, 28 * DAYS);
 
-        var nodehash = namehash.hash("newconfigname.eth");
+        var nodehash = namehash.hash("newconfigname.scroll");
         assert.equal((await ens.resolver(nodehash)), resolver.address);
         assert.equal((await ens.owner(nodehash)), registrantAccount);
         assert.equal((await resolver.addr(nodehash)), registrantAccount);
@@ -136,7 +136,7 @@ contract('ETHRegistrarController', function (accounts) {
         assert.equal(tx.logs[0].args.owner, registrantAccount);
         assert.equal((await web3.eth.getBalance(controller.address)) - balanceBefore, 28 * DAYS);
 
-        var nodehash = namehash.hash("newconfigname2.eth");
+        var nodehash = namehash.hash("newconfigname2.scroll");
         assert.equal((await ens.resolver(nodehash)), resolver.address);
         assert.equal((await resolver.addr(nodehash)), 0);
     });
